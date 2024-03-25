@@ -1,0 +1,16 @@
+export const avatarsImg = {
+  'Death Knight': 'Death Knight',
+  'Demon Hunter': 'Demon Hunter',
+  Dream: 'Dream',
+  Druid: 'Druid',
+  Hunter: 'Hunter',
+  Mage: 'Mage',
+  Neutral: 'Neutral',
+  Paladin: 'Paladin',
+  Priest: 'Priest',
+  Rogue: 'Rogue',
+  Shaman: 'Shaman',
+  Warlock: 'Warlock',
+  Warrior: 'Warrior',
+  Whizbang: 'Whizbang',
+};
