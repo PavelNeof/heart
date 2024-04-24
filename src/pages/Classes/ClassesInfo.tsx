@@ -1,41 +1,28 @@
-import React from 'react';
+import 'react';
 import { useNavigate } from 'react-router-dom';
 import { Table } from 'antd';
 import { TableColumnsType } from 'antd/lib';
 import { observer } from 'mobx-react-lite';
 import store from '../../common/store';
-import { values } from 'mobx';
+import { ExpandedDataType } from '@/common/types';
 
-interface DataType {
-  key: React.Key;
-  name: string;
-  // platform: string;
-  // version: string;
-  // upgradeNum: number;
-  // creator: string;
-  // createdAt: string;
-}
-
-interface ExpandedDataType {
-  artist: string;
-  cardId: string;
-  cardSet: string;
-  collectible: boolean;
-  dbfId: number;
-  faction: string;
-  health: number;
-  locale: string;
-  name: string;
-  playerClass: string;
-  rarity: string;
-  type: string;
-  key: React.Key;
-}
+type DataSourceType = {
+  key: string[];
+  name: string[];
+  expandedData: ExpandedDataType[][];
+};
 
 const ClassesInfo = observer(() => {
   const navigate = useNavigate();
 
-  const columns: TableColumnsType<DataType> = [{ title: 'Name', dataIndex: 'name', key: 'name', width: '1500px' }];
+  const columns: TableColumnsType<DataSourceType> = [
+    {
+      title: 'Name',
+      dataIndex: 'name',
+      key: 'name',
+      width: '1500px',
+    },
+  ];
 
   const dataSource = store.classesInfoState?.map(classObj => {
     return {
@@ -44,7 +31,8 @@ const ClassesInfo = observer(() => {
       expandedData: Object.values(classObj),
     };
   });
-  const expandedRender = record => {
+  const expandedRender = (record: DataSourceType) => {
+    console.log('record', record);
     const expandedColumns: TableColumnsType<ExpandedDataType> = [
       { title: 'Artist', dataIndex: 'artist', key: 'artist' },
       { title: 'Card Id', dataIndex: 'cardId', key: 'cardId' },

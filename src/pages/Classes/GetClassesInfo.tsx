@@ -1,5 +1,5 @@
 import 'react';
-import { GetClassesInfoType } from '../../common/types';
+import { ClassesInfoStateType, GetClassesInfoType } from '../../common/types';
 import 'twin.macro';
 import axios from 'axios';
 import { getClass } from '../../common/api';
@@ -18,12 +18,10 @@ const GetClassesInfo = observer(({ infoClassesArray, setInfoClassesArray, setDis
     setLoading(true);
     const promiseGetClasses = async (className: string) => {
       const response = await axios.request(getClass(className));
-      // return { [className]: response.data };
       return { [className]: response.data };
     };
     try {
-      const response = await Promise.all(infoClassesArray?.map(className => promiseGetClasses(className)));
-      console.log('response', response);
+      const response: ClassesInfoStateType = await Promise.all(infoClassesArray?.map(className => promiseGetClasses(className)));
       store.addClassesInfo(response);
       navigate('/classes-info');
     } catch (e) {
