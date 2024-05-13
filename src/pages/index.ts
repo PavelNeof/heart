@@ -8,3 +8,4 @@ export * from './Qualities';
 export * from './Types';
 export * from './Cards';
 export * from './Registration';
+export * from './Cart';

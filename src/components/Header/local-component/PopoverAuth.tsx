@@ -18,21 +18,34 @@ import { observer } from 'mobx-react-lite';
 import { useNavigate } from 'react-router-dom';
 import fakeApiStore from '../../../common/fakeApiStore';
 
-const validationSchema = create((data = {}) => {
-  test('email', 'Поле заполненно некорректно', () => {
-    enforce(data.email).isNotEmpty();
-    enforce(data.email).matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
-  });
-  test('password', 'Поле обязательно для заполнения', () => {
-    enforce(data.password).isNotEmpty();
-  });
-});
 type UseFormType = {
   email: string;
   password: string;
 };
-const UserIsNotAuthorized = () => {
+const UserIsNotAuthorized = observer(({ setIsAuth }: { setIsAuth: (value: boolean) => void }) => {
   const navigate = useNavigate();
+  const validationSchema = create((data = {}) => {
+    test('email', 'Поле заполненно некорректно', () => {
+      enforce(data.email).isNotEmpty();
+      enforce(data.email).matches(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
+    });
+    test('password', 'Поле обязательно для заполнения', () => {
+      enforce(data.password).isNotEmpty();
+    });
+    test('email', 'Пользователя не существует', () => {
+      enforce(data.email).equals(fakeApiStore.currentUser?.email);
+    });
+    test('password', 'Пользователя не существует', () => {
+      enforce(data.password).equals(fakeApiStore.currentUser?.password);
+    });
+    // test('credentials', 'Пользователя не существует', () => {
+    //   enforce(data.email).equals(fakeApiStore.currentUser?.email)
+    //       .and(enforce(data.password).equals(fakeApiStore.currentUser?.password));
+    // });
+    // test(['email', 'password'], 'Пользователя не существует', () => {
+    //   enforce(data.email).equals(fakeApiStore.currentUser?.email) && enforce(data.password).equals(fakeApiStore.currentUser?.password);
+    // });
+  });
   const methods = useForm<UseFormType>({
     resolver: vestResolver(validationSchema),
     mode: 'onSubmit',
@@ -41,6 +54,7 @@ const UserIsNotAuthorized = () => {
   const onSubmit = data => {
     //fakeApi
     console.log(data);
+    setIsAuth(true);
   };
   const onRegistrationNavigate = e => {
     e.preventDefault();
@@ -70,47 +84,52 @@ const UserIsNotAuthorized = () => {
       </form>
     </FormProvider>
   );
-};
+});
 
-const UserIsAuthorized = ({ currentUser }) => {
-  //TODO current user из авторизации
+const UserIsAuthorized = observer(
+  ({ currentUser, setIsAuth }: { setIsAuth: (isAuth: boolean) => void; currentUser: { firstName: string; email: string } }) => {
+    const { closePopover } = usePopover();
+    const onExitUser = () => {
+      setIsAuth(false);
+      closePopover();
+    };
+    return (
+      <div tw="p-2">
+        <div tw="flex gap-2 pb-4">
+          <div>
+            <img src={Avatar} />
+          </div>
+          <div tw="flex flex-col text-[#446B80]">
+            <span>{currentUser?.firstName}</span>
+            <span tw="text-sm">{currentUser?.email}</span>
+          </div>
+        </div>
 
-  return (
-    <div tw="p-2">
-      <div tw="flex gap-2 pb-4">
+        <div tw="mb-1 pb-1" style={{ borderBottom: '1px solid rgba(34, 53, 64, 0.08)' }}>
+          <Button tw="mb-2" coloration="secondary" iconLeft={<img src={CubeIcon} />}>
+            Мои заказы
+          </Button>
+          <Button coloration="secondary" iconLeft={<img src={HeartIcon} />}>
+            Мое избранное
+          </Button>
+        </div>
         <div>
-          <img src={Avatar} />
+          <Button tw="mb-2" coloration="secondary" iconLeft={<img src={SettingIcon} />}>
+            Настройки личных данных
+          </Button>
+          <Button onClick={onExitUser} coloration="secondary" iconLeft={<img src={ExitIcon} />}>
+            Выйти
+          </Button>
         </div>
-        <div tw="flex flex-col text-[#446B80]">
-          <span>{currentUser?.firstName}</span>
-          <span tw="text-sm">{currentUser?.email}</span>
-        </div>
       </div>
-
-      <div tw="mb-1 pb-1" style={{ borderBottom: '1px solid rgba(34, 53, 64, 0.08)' }}>
-        <Button tw="mb-2" coloration="secondary" iconLeft={<img src={CubeIcon} />}>
-          Мои заказы
-        </Button>
-        <Button coloration="secondary" iconLeft={<img src={HeartIcon} />}>
-          Мое избранное
-        </Button>
-      </div>
-      <div>
-        <Button tw="mb-2" coloration="secondary" iconLeft={<img src={SettingIcon} />}>
-          Настройки личных данных
-        </Button>
-        <Button coloration="secondary" iconLeft={<img src={ExitIcon} />}>
-          Выйти
-        </Button>
-      </div>
-    </div>
-  );
-};
+    );
+  },
+);
 
 const PopoverAuth = observer(() => {
   //TODO доделать после авторизации
   const [isAuth, setIsAuth] = React.useState(false);
-  const [currentUser, setCurrentUser] = React.useState({ firstName: 'asdasd', email: 'annaannnnanana@gmail.com' });
+  const [currentUser, setCurrentUser] = React.useState({ firstName: '', email: '' });
 
   React.useEffect(() => {
     if (fakeApiStore?.currentUser) {
@@ -129,7 +148,7 @@ const PopoverAuth = observer(() => {
         }
         close={true}
       >
-        {isAuth ? <UserIsAuthorized currentUser={currentUser} /> : <UserIsNotAuthorized />}
+        {isAuth ? <UserIsAuthorized setIsAuth={setIsAuth} currentUser={currentUser} /> : <UserIsNotAuthorized setIsAuth={setIsAuth} />}
       </Popover>
     </div>
   );

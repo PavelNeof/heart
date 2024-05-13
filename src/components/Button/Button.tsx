@@ -6,7 +6,7 @@ type ButtonComponentType = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   children?: React.ReactNode;
   type?: 'button' | 'submit' | 'reset' | undefined;
-  coloration?: 'common' | 'secondary';
+  coloration?: 'common' | 'secondary' | 'disabled';
   iconRight?: React.ReactNode;
   iconLeft?: React.ReactNode;
   count?: string | number;
@@ -23,7 +23,7 @@ const Button = React.forwardRef(
         {iconLeft && (
           <span tw="relative">
             {iconLeft}{' '}
-            {count && (
+            {count && +count > 0 && (
               <span tw="flex items-center justify-center bg-[#446B80] h-[19px] w-[19px] absolute top-[-6px] left-3 rounded-[1rem] text-white">
                 {count}
               </span>
@@ -46,6 +46,14 @@ const ButtonWrapper = styled.button<LabelProps>(({ coloration }) => {
     css`
       &&& {
         ${tw`flex justify-center items-center rounded border-2 border-solid border-transparent cursor-pointer min-h-9`}
+        ${coloration === 'disabled' &&
+        `
+      background-color: #223540; 
+      transition: background-color 0.3s ease;
+      cursor: not-allowed;
+      &:hover {
+        background-color: #446B80;
+      }`}
         ${coloration === 'common' &&
         `
       background-color: #7FC9F0; 

@@ -1,7 +1,7 @@
 import 'react';
 import 'twin.macro';
 import { Route, Routes, BrowserRouter } from 'react-router-dom';
-import { Cards, Home, Registration, RecoveryPassword } from '../pages';
+import { Cards, Home, Registration, RecoveryPassword, Cart, Order } from '../pages';
 import { ClassesInfo } from '../pages/Classes';
 import { Header } from '../components';
 
@@ -17,6 +17,8 @@ const AppRouter = () => {
             <Route path="/cards" element={<Cards />} />
             <Route path="/registration" element={<Registration />} />
             <Route path="/recovery-password" element={<RecoveryPassword />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/order" element={<Order />} />
           </Routes>
         </div>
       </BrowserRouter>

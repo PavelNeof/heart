@@ -7,21 +7,25 @@ import BurgerMenuIcon from '../../assets/icons/menu-burger-ico.svg';
 import CartIcon from '../../assets/icons/cart-ico.svg';
 import MarksIcon from '../../assets/icons/marks-ico.svg';
 import PopoverAuth from './local-component/PopoverAuth';
+import { useNavigate } from 'react-router-dom';
+import { observer } from 'mobx-react-lite';
+import fakeApiStore from '../../common/fakeApiStore';
 
-const Header = () => {
+const Header = observer(() => {
+  const navigate = useNavigate();
   const [city, setCity] = React.useState('');
   React.useEffect(() => {
     setCity('Москва');
   }, []);
-
+  const quantityProductsInCart = fakeApiStore?.mockProducts.reduce((acc, item) => acc + Number(item.count), 0);
   return (
     <Wrapper>
       <div tw="flex justify-between py-2" style={{ borderBottom: '1px solid rgba(34, 53, 64, 0.08)' }}>
         <Button iconRight={<img src={BurgerMenuIcon} />}>Каталог товаров</Button>
-        <SearchBar onButtonClick={v => console.log(v)} />
+        <SearchBar placeholder="Поиск..." onButtonClick={v => console.log(v)} name="Найти" clear />
         <PopoverAuth />
 
-        <Button iconLeft={<img src={CartIcon} />} count={4} coloration="secondary">
+        <Button onClick={() => navigate('/cart')} iconLeft={<img src={CartIcon} />} count={quantityProductsInCart} coloration="secondary">
           Корзина
         </Button>
       </div>
@@ -44,7 +48,7 @@ const Header = () => {
       </div>
     </Wrapper>
   );
-};
+});
 
 const Wrapper = tw.span`fixed bg-[#fafcfd] h-[140px] top-0 left-[50px] right-[50px] w-[calc(100% - 100px)] z-50 items-center`;
 const City = tw.span`rounded border-2 border-solid border-none cursor-pointer bg-[#fafcfd] flex items-center pl-1 text-[#7FC9F0] hover:(underline)`;
